@@ -2,12 +2,13 @@ package ca.bcit.comp2522.lab4;
 
 /**
  * Represents dates from the Gregorian calendar, including the name of the weekday and date constraints.
+ *
  * @author Kiet Tran
- * @author EngEng Nay
+ * @author AngEng Nay
  * @version 1.0
  */
 
-public class Date
+public class Date implements Comparable<Date>
 {
     private final int year;
     private final int month;
@@ -662,8 +663,25 @@ public class Date
         }
     }
 
+    /**
+     * Compares this Date with another Date chronologically.
+     *
+     * @param other the Date to be compared
+     * @return a negative integer if this date is earlier than the other date,
+     *         a positive integer if this date is later than the other date,
+     *         or 0 if both dates are equal
+     **/
+    @Override
+    public int compareTo(final Date other)
+    {
+        int yearCompare = Integer.compare(this.year, other.year);
+        if (yearCompare != 0) return yearCompare;
 
+        int monthCompare = Integer.compare(this.month, other.month);
+        if (monthCompare != 0) return monthCompare;
 
+        return Integer.compare(this.day, other.day);
+    }
 
 
 }
