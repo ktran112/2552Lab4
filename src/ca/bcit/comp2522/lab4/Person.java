@@ -26,6 +26,9 @@ public class Person implements Comparable<Person>, Printable, Reversible
                   final Name name)
     {
 
+        validateDate(dateOfBirth);
+        validateName(name);
+
         this.dateOfBirth = dateOfBirth;
         this.name = name;
         this.dateOfDeath = null;
@@ -71,44 +74,7 @@ public class Person implements Comparable<Person>, Printable, Reversible
     @Override
     public int compareTo(final Person other)
     {
-        /* Variables for storing the year of Person Objects were born. */
-        final int thisPersonYear;
-        final int otherPersonYear;
-        final int yearCompare;
-
-        thisPersonYear = this.dateOfBirth.getYear();
-        otherPersonYear = other.dateOfBirth.getYear();
-        yearCompare = Integer.compare(otherPersonYear, thisPersonYear);
-
-        if (yearCompare != 0)
-        {
-            return yearCompare;
-        }
-
-        /* Variables for storing the month of Person Objects were born. */
-        final int thisPersonMonth;
-        final int otherPersonMonth;
-        final int monthCompare;
-
-        thisPersonMonth = this.dateOfBirth.getMonthNumerical();
-        otherPersonMonth = other.dateOfBirth.getMonthNumerical();
-        monthCompare = Integer.compare(otherPersonMonth, thisPersonMonth);
-
-        if (monthCompare != 0)
-        {
-            return monthCompare;
-        }
-
-        /* Variables for storing the day of the Person Objects were born. */
-        final int thisPersonDay;
-        final int otherPersonDay;
-        final int dayCompare;
-
-        thisPersonDay = this.dateOfBirth.getDay();
-        otherPersonDay = other.dateOfBirth.getDay();
-        dayCompare = Integer.compare(otherPersonDay, thisPersonDay);
-
-        return dayCompare;
+        return this.dateOfBirth.compareTo(other.dateOfBirth);
     }
 
     /**
@@ -143,11 +109,9 @@ public class Person implements Comparable<Person>, Printable, Reversible
 
     /**
      * Prints the Person's full name backward.
-     *
-     * @return the full name in reversed order
      */
     @Override
-    public String backward()
+    public void backward()
     {
         final StringBuilder reversedString;
         final String fullName;
@@ -157,6 +121,32 @@ public class Person implements Comparable<Person>, Printable, Reversible
         reversedString.reverse();
 
         fullName = reversedString.toString();
-        return fullName;
+        System.out.println(fullName);
+    }
+
+    /*
+     * A helper method to validate if the date is valid or not.
+     *
+     * @param date the Date object
+     */
+    private static void validateDate(Date date)
+    {
+        if (date == null)
+        {
+            throw new IllegalArgumentException("Date cannot be null");
+        }
+    }
+
+    /*
+     * A helper method to validate if the name is valid or not.
+     *
+     * @param name the name object
+     */
+    private static void validateName(Name name)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
     }
 }

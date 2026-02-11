@@ -2,13 +2,22 @@ package ca.bcit.comp2522.lab4;
 
 import java.util.Objects;
 
+/**
+ * Represents a biography.
+ *
+ * @author Kiet Tran
+ * @author EngEng Nay
+ *
+ * @version 1.0
+ */
 public class Biography extends Book implements Printable {
 
-    private Person subject;
+    private final Person subject;
 
 
     /**
      * Constructs a biography using the data from the Book class, as well as a subject.
+     *
      * @param title
      * @param yearPublished
      * @param author
@@ -21,11 +30,17 @@ public class Biography extends Book implements Printable {
     {
         super(title, yearPublished, author);
 
+        validateSubject(subject);
+
         this.subject = subject;
     }
 
-
-    private void validateSubject(final Person subject)
+    /*
+     * A helper method to validate if a subject is valid or not.
+     *
+     * @param subject the subject of the object
+     */
+    private static void validateSubject(final Person subject)
     {
         if (subject == null)
         {
@@ -36,8 +51,10 @@ public class Biography extends Book implements Printable {
 
     /**
      * Checks for equality between this biography and an object.
+     *
      * @param o   the reference object with which to compare.
-     * @return
+     *
+     * @return True if objects equal each other, false if otherwise
      */
     @Override
     public final boolean equals(final Object o) {
@@ -50,7 +67,7 @@ public class Biography extends Book implements Printable {
             return false;
         }
 
-        Biography that;
+        final Biography that;
         that = (Biography) o;
 
         return Objects.equals(this.subject,
@@ -60,7 +77,7 @@ public class Biography extends Book implements Printable {
 
     /**
      * Returns a hash code for this biography.
-     * @return
+     * @return The hash code
      */
     @Override
     public final int hashCode()
@@ -70,15 +87,30 @@ public class Biography extends Book implements Printable {
 
 
     /**
-     *  Prints and displays the books information, as well as the subject.
-     *  Implemented from the Printable interface.
+     * Displays the details of this Biography.
+     * Prints all inherited Book attributes along with
+     * the subject of the biography in a formatted output.
      */
     @Override
     public void display()
     {
-        return super.print()
-                + "\nSubject: " + this.subject.toString();
+        System.out.println(this);
     }
+
+    /**
+     * Returns a string representation of this Biography object.
+     * Includes the book's title, year published, author,
+     * and the subject of the biography.
+     *
+     * @return a formatted string containing all Biography details
+     */
+    @Override
+    public String toString()
+    {
+        return super.toString()
+                + "\nSubject: " + subject;
+    }
+
 
 }
 

@@ -68,7 +68,7 @@ public class Name implements Printable
     @Override
     public void display()
     {
-        System.out.println("This person's name is: " + this);
+        System.out.println(this);
     }
 
     /**
@@ -79,7 +79,7 @@ public class Name implements Printable
     @Override
     public String toString()
     {
-        return getFirstName() + " " + getLastName();
+        return "This person's name is: " + firstName + " " + lastName;
     }
 
     /*

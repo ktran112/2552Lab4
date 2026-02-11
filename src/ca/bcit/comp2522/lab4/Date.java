@@ -14,11 +14,11 @@ public class Date implements Comparable<Date>
     private final int month;
     private final int day;
 
-
-    private static final int MIN_YEAR = 1800;
+    private static final int MIN_YEAR = 1;
     private static final int EIGHTEENTH_CENTURY = 1800;
     private static final int NINETEENTH_CENTURY = 1900;
     private static final int TWENTIETH_CENTURY = 2000;
+    private static final int TWENTY_FIRST_CENTURY = 2100;
     private static final int CURRENT_YEAR = 2026;
     private static final int MIN_MONTH = 1;
     private static final int MAX_MONTH = 12;
@@ -81,6 +81,7 @@ public class Date implements Comparable<Date>
     private static final int EIGHTEENTH_CENTURY_CODE = 2;
     private static final int NINETEENTH_CENTURY_CODE = 0;
     private static final int TWENTIETH_CENTURY_CODE = 6;
+    private static final int TWENTY_FIRST_CENTURY_CODE = 4;
 
     // This refers to the fact that most years that are multiples of four are leap years
     private static final int LEAP_YEAR_DIVISOR = 4;
@@ -93,7 +94,6 @@ public class Date implements Comparable<Date>
 
     // "Four Century Divisor" refers to the fact that for every year that is a multiple of 400 is a leap year.
     private static final int LEAP_YEAR_FOUR_CENTURY_DIVISOR = 400;
-
 
 
 
@@ -360,6 +360,7 @@ public class Date implements Comparable<Date>
     {
         // Required variables for the algorithm to work.
         final int centuryCode;
+        final int normalizedYear;
         final int yearLastTwoDigitsOnly;
         final int quotientOfTwelves;
         final int remainderOfTwelves;
@@ -369,9 +370,12 @@ public class Date implements Comparable<Date>
         final int sumOfTheFormers;
         final int remainderOfSevens;
 
+        // Normalize the year to the 1800-2199 range using modulo 400
+        normalizedYear = ((this.year - EIGHTEENTH_CENTURY) % LEAP_YEAR_FOUR_CENTURY_DIVISOR + LEAP_YEAR_FOUR_CENTURY_DIVISOR) % LEAP_YEAR_FOUR_CENTURY_DIVISOR + EIGHTEENTH_CENTURY;
+
         centuryCode = getCenturyCode();                             // Get the century code for the current year.
 
-        yearLastTwoDigitsOnly = this.year - getNthCentury();        // Take the last two digits of the year.
+        yearLastTwoDigitsOnly = normalizedYear - getNthCentury();   // Take the last two digits of the normalized year.
 
         quotientOfTwelves = yearLastTwoDigitsOnly / HELPER_TWELVE;  // Divide the last two digits by twelve and get the quotient.
 
@@ -454,10 +458,16 @@ public class Date implements Comparable<Date>
         }
     }
 
-
-    public final String getFormattedDate()
+    /**
+     * Returns a string representation of this Date object.
+     *
+     * @return a formatted string containing the
+     * day of the week, month, date and year.
+     */
+    @Override
+    public String toString()
     {
-        StringBuilder formatter;
+        final StringBuilder formatter;
 
         formatter = new StringBuilder();
 
@@ -587,64 +597,48 @@ public class Date implements Comparable<Date>
 
     private final int getCenturyCode()
     {
-        if (this.year - EIGHTEENTH_CENTURY < CENTURY && this.year - EIGHTEENTH_CENTURY >= 0)
+        // Normalize the year to the 1800-2199 range using modulo 400
+        int normalizedYear = ((this.year - EIGHTEENTH_CENTURY) % LEAP_YEAR_FOUR_CENTURY_DIVISOR + LEAP_YEAR_FOUR_CENTURY_DIVISOR) % LEAP_YEAR_FOUR_CENTURY_DIVISOR + EIGHTEENTH_CENTURY;
 
+        if (normalizedYear - EIGHTEENTH_CENTURY < CENTURY)
         {
             return EIGHTEENTH_CENTURY_CODE;
         }
-
-        else
-
-        if (this.year - NINETEENTH_CENTURY < CENTURY && this.year - NINETEENTH_CENTURY >= 0)
-
+        else if (normalizedYear - NINETEENTH_CENTURY < CENTURY)
         {
             return NINETEENTH_CENTURY_CODE;
         }
-
-        else
-
-        if (this.year - TWENTIETH_CENTURY < CENTURY && this.year - TWENTIETH_CENTURY >= 0)
-
+        else if (normalizedYear - TWENTIETH_CENTURY < CENTURY)
         {
             return TWENTIETH_CENTURY_CODE;
         }
-
-        else
-
+        else // 2100-2199
         {
-            throw new IllegalStateException("Year range is invalid. Cannot provide century code");
+            return TWENTY_FIRST_CENTURY_CODE;
         }
     }
 
 
     private final int getNthCentury()
     {
-        if (this.year - EIGHTEENTH_CENTURY < CENTURY && this.year - EIGHTEENTH_CENTURY >= 0)
+        // Normalize the year to the 1800-2199 range using modulo 400
+        int normalizedYear = ((this.year - EIGHTEENTH_CENTURY) % LEAP_YEAR_FOUR_CENTURY_DIVISOR + LEAP_YEAR_FOUR_CENTURY_DIVISOR) % LEAP_YEAR_FOUR_CENTURY_DIVISOR + EIGHTEENTH_CENTURY;
 
+        if (normalizedYear - EIGHTEENTH_CENTURY < CENTURY)
         {
             return EIGHTEENTH_CENTURY;
         }
-
-        else
-
-        if (this.year - NINETEENTH_CENTURY < CENTURY && this.year - NINETEENTH_CENTURY >= 0)
-
+        else if (normalizedYear - NINETEENTH_CENTURY < CENTURY)
         {
             return NINETEENTH_CENTURY;
         }
-
-        else
-
-        if (this.year - TWENTIETH_CENTURY < CENTURY && this.year - TWENTIETH_CENTURY >= 0)
-
+        else if (normalizedYear - TWENTIETH_CENTURY < CENTURY)
         {
             return TWENTIETH_CENTURY;
         }
-
-        else
-
+        else // 2100-2199
         {
-            throw new IllegalStateException("Year range is invalid. Cannot provide century.");
+            return TWENTY_FIRST_CENTURY;
         }
     }
 
@@ -670,19 +664,32 @@ public class Date implements Comparable<Date>
      * @return a negative integer if this date is earlier than the other date,
      *         a positive integer if this date is later than the other date,
      *         or 0 if both dates are equal
-     **/
+     */
     @Override
     public int compareTo(final Date other)
     {
-        int yearCompare = Integer.compare(this.year, other.year);
-        if (yearCompare != 0) return yearCompare;
+        final int yearCompare;
+        final int monthCompare;
+        final int dayCompare;
 
-        int monthCompare = Integer.compare(this.month, other.month);
-        if (monthCompare != 0) return monthCompare;
+        yearCompare = Integer.compare(this.year, other.year);
 
-        return Integer.compare(this.day, other.day);
+        if (yearCompare != 0)
+        {
+            return yearCompare;
+        }
+
+        monthCompare = Integer.compare(this.month, other.month);
+
+        if (monthCompare != 0)
+        {
+            return monthCompare;
+        }
+
+        dayCompare = Integer.compare(this.day, other.day);
+
+        return dayCompare;
     }
-
 
 }
 
